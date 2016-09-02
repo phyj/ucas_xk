@@ -45,8 +45,8 @@ data = data.decode('utf-8')
 '''
 #print(data)
 
-id = 'acmgaoang@gmail.com'
-password = '420281199409254611'
+id = ''
+password = ''
 
 postDict = {
         'userName': id,
