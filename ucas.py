@@ -3,7 +3,8 @@ import re
 import http.cookiejar
 import urllib.request
 import urllib.parse
- 
+import time
+
 def ungzip(data):
     try:        # 尝试解压
         print('正在解压.....')
@@ -37,16 +38,8 @@ header = {
  
 url = 'http://sep.ucas.ac.cn/slogin'
 opener = getOpener(header)
-'''
-op = opener.open(url)
-data = op.read()
-data = ungzip(data)     # 解压
-data = data.decode('utf-8')
-'''
-#print(data)
-
-id = ''
-password = ''
+id = 'acmgaoang@gmail.com'
+password = '420281199409254611'
 
 postDict = {
         'userName': id,
@@ -54,32 +47,47 @@ postDict = {
         'sb': 'sb'
 }
 postData = urllib.parse.urlencode(postDict).encode()
-op = opener.open(url, postData)
-url = "http://sep.ucas.ac.cn/portal/site/226"
-op = opener.open(url)
-data = op.read()
-data = ungzip(data).decode('utf-8')
 
-linkre = re.compile("href=\'(.+?)\'")
-for x in linkre.findall(data):
-    url = x
-print(url)
-op = opener.open(url)
-url = "http://jwxk.ucas.ac.cn/courseManage/main"
-op = opener.open(url)
-data = ungzip(op.read()).decode('utf-8')
+def login():
+    global url
+    op = opener.open(url, postData)
+    url = "http://sep.ucas.ac.cn/portal/site/226"
+    op = opener.open(url)
+    data = op.read()
+    data = ungzip(data).decode('utf-8')
 
-linkre = re.compile('action=\"(.+?)\"')
-for x in linkre.findall(data):
-    url = x
-url = "http://jwxk.ucas.ac.cn" + url.replace("select","save")
+    linkre = re.compile("href=\'(.+?)\'")
+    for x in linkre.findall(data):
+        url = x
+    print(url)
+    op = opener.open(url)
+    url = "http://jwxk.ucas.ac.cn/courseManage/main"
+    op = opener.open(url)
+    data = ungzip(op.read()).decode('utf-8')
+        
+    linkre = re.compile('action=\"(.+?)\"')
+    for x in linkre.findall(data):
+        url = x
+    url = "http://jwxk.ucas.ac.cn" + url.replace("select","save")
+    print(url)
+            
 course = ["125752"]
 degree = [1]
-for i in range(len(course)):
-    postDict.clear()
-    postDict["sids"] = course[i]
-    if degree[i]==1:
-        postDict["did_"+course[i]] = course[i]
-    op = opener.open(url,urllib.parse.urlencode(postDict).encode())
-#print(ungzip(op.read()).decode('utf-8'))
+
+def xk():
+    for i in range(len(course)):
+        postDict.clear()
+        postDict["sids"] = course[i]
+        if degree[i]==1:
+            postDict["did_"+course[i]] = course[i]
+        opener.open(url,urllib.parse.urlencode(postDict).encode())
+
+login()
+count = 0
+limit = 10
+gap = 0.4
+while(count<limit):
+    count = count + 1
+    xk()
+    time.sleep(gap)
 print("done")
